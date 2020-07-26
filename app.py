@@ -132,6 +132,7 @@ def tobs_data():
     station_date_tobs=dict(data)
     return jsonify(station_date_tobs)
 
+"""
 @app.route("/api/v1.0/<start>")
 def stats_start(start):
 
@@ -155,18 +156,26 @@ def stats_start(start):
         stats_start_dict["Max_temp"]=row[2]
     
     return jsonify(stats_start_dict)
-
+"""
+@app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
-def stats_Start_end(start,end):
+def stats_Start_end(start,end=None):
     
     # Create our session (link) to the DB
     session = Session(engine)
 
     #Find min, average and max temperature observation for dates equal to greater than start date passed in the API
-    data=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs))\
-    .filter(func.strftime("%Y-%m-%d", Measurement.date) >=start)\
-    .filter(func.strftime("%Y-%m-%d", Measurement.date) <=end)\
-    .all()
+    if end!=None:
+        data=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs))\
+        .filter(func.strftime("%Y-%m-%d", Measurement.date) >=start)\
+        .filter(func.strftime("%Y-%m-%d", Measurement.date) <=end)\
+        .all()
+    else:
+        #Find min, average and max temperature observation for dates equal to greater than start date passed in the API
+        data=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs))\
+        .filter(func.strftime("%Y-%m-%d", Measurement.date) >=start)\
+        .all()
+
     #Close session after use
     session.close()
 
